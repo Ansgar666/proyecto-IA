@@ -41,9 +41,13 @@ function comprobarSiChocaConLadrillos(){
             if ((ladrillo.y+50 == posYBola && posXBola >= ladrillo.x) && posXBola <= ladrillo.x +128 ){
                 ladrillo.isBroken = true;
                 vyBola = vyBola *-1;
-                posXBola2 = ladrillo.x +50;
-                posYBola2 = 0;
-                
+                let power = {
+                    x:ladrillo.x + 64,
+                    y:ladrillo.y,
+                    w:20,
+                    h:20
+                }
+                bola2.push(power);
             }
             
      }
@@ -68,9 +72,12 @@ function draw() {
     
     image(img4,posXBola, posYBola, 15, 15)
     image(img2,posXPala,posYPala, 90, 40, 20); 
-    ellipse(posXBola2, posYBola2, 20, 20);
-    posYBola2 = posYBola2 + vyBola2
-    
+    for (let i=0; i<bola2.length; i++){
+        var power = bola2[i];
+        ellipse(power.x, power.y, 20, 20);
+        power.y = power.y + vyBola2
+        power.x = power.x
+    }
     
      if(posXBola<=0 || posXBola >=1280){
         vxBola = vxBola * -1;
@@ -81,7 +88,7 @@ function draw() {
    
     if(posYBola ==720){
         image (img5,0,0,1280, 720);
-         frameRate (0)
+        frameRate(0);
         alert ("Presiona espacio para reiniciar")
     }
     if(posYBola == posYPala && (posXBola >=posXPala && posXBola <= posXPala+90)){
@@ -104,7 +111,7 @@ function keydown() {
       posXPala=posXPala+vxPala;
     }
     if (keyIsDown (32) && frameRate (0)){
-        frameRate ();
+       
         location.reload();
     
 }
