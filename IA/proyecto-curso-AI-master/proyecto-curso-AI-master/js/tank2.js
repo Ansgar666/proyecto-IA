@@ -1,83 +1,189 @@
-class Tanque {
+class Disparo{
+
+    constructor(x,y,angle,bodyAngle){
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.bodyAngle = bodyAngle
+    }
+    calculateAngle(){
+         const angleRadians = (this.angle+this.bodyAngle )* Math.PI / 180;
+         this.displacementX = 10 * Math.sin(angleRadians);
+         this.displacementY = 10* Math.cos(angleRadians);
+    }
+    dibujar(){
+        push()
+
+        rectMode(CENTER);
+        translate(this.x,this.y);
+        rotate(this.angle+this.bodyAngle);
+        rect(0,-25,5,5);
+        pop()
+    }
+
+    mover(){
+        if(keyIsDown(65)){
+            this.bodyAngle = this.bodyAngle - 1;
+        }
+        if(keyIsDown(68)){
+            this.bodyAngle = this.bodyAngle + 1;
+        }
+        this.calculateAngle()
+        this.x = this.x + this.displacementX;
+        this.y = this.y - this.displacementY;
+    }
+
+}
+class Tank{
+
     constructor(x,y){
         this.x = x;
         this.y = y;
     }
     size = 50;
-    sizeTower = this.size/2
+    sizeTower = this.size/2;
     currentTowerAngle = 0;
-    currentTowerAngle = 0;
+    currentBodyAngle = 0;
+    dibujarTank(){
+        rectMode(CENTER);
+        rect(0,0,this.size+10,this.size-10 );
+        rect(0,0,this.size,this.size);
+      
 
-        dibujarTank (){
-            rectMode (CENTER)
-            rect (this.x,this.y,this.w,this.h)
+    }
+    dibujarTorreta(){
+        rectMode(CENTER);
+        rect(0,0 ,this.sizeTower,this.sizeTower);
+    }
+    calculateAngle(){
+
+    }
+    dibujarTroncho(){
+        rect(0,0-this.sizeTower ,3,this.sizeTower);
+    }
+    disparar(arrayProyectiles){
+        if(this.cooldown > 0){
+            this.cooldown--;
+        }else{
+            this.cooldown = 10;
+            arrayProyectiles.push(new Disparo(this.x,this.y,this.currentTowerAngle,this.currentBodyAngle));
+        }
+       
+    }
+    mover(arrayProyectiles){
+        if(keyIsDown(32)){
+            this.disparar(arrayProyectiles);
+        }
+        angleMode(DEGREES);
+        const angleRadians = this.currentBodyAngle * Math.PI / 180;
+        const displacementX = 2 * Math.sin(angleRadians);
+        const displacementY = 2 * Math.cos(angleRadians);
+        if(keyIsDown(LEFT_ARROW)){
+            this.currentTowerAngle = this.currentTowerAngle - 1;
+
+        }
+        if(keyIsDown(RIGHT_ARROW)){
+            this.currentTowerAngle = this.currentTowerAngle + 1;
+        }
+
+
+        if(keyIsDown(87)){
             
+            this.x = this.x + displacementX;
+            this.y = this.y - displacementY;
         }
-        diubujarTorreta (){
-            rect (this.x+20, this.y-25,10,50)
+        if(keyIsDown(83)){
+            this.x = this.x - displacementX;
+            this.y = this.y + displacementY;
         }
-        dibujarTronco(){
-            
+        if(keyIsDown(65)){
+            this.currentBodyAngle = this.currentBodyAngle - 1;
         }
-        moverse (key1,key2,key3,key4){
-            const angleRadians = this.currentBodyAngle * Math.PI/180;
-            const displacementX = 2 * Math.sin (angleRadians);
-            const displacementY = 2 * Math.cos (angleRadians);
-            if (keyIsDown(key1) && this.x >0){
-                this.x = this.x -10;
-            }
-            if (keyIsDown(key2) && this.x < (1280-this.w)){
-                this.x = this.x +10;
-            }
-            if (keyIsDown(key3) && this.y >0){
-                this.y = this.y +10;
-            }
-            if (keyIsDown(key4) && this.y <720){
-                this.y = this.y -10;
-            }
-
+        if(keyIsDown(68)){
+            this.currentBodyAngle = this.currentBodyAngle + 1;
         }
-        rotar (key5, key6){
-            if (keyIsDown(key5)){
-                let axis = [1, 1, 0];
-            rotate(QUARTER_PI, axis)
-            }
-            if (keyIsDown(key6)){
-                rotate(QUARTER_PI);
-            }
+        push()
+        translate(this.x,this.y)
+        rotate(this.currentBodyAngle);
+        this.dibujarTank();
+        rotate(this.currentTowerAngle);
+        this.dibujarTorreta();
+        this.dibujarTroncho()
+
+        pop()
+    }
+    
+}
+class Enemies {
+    constructor (x,y){
+        this.x = x
+        this.y = y
+    }
+    w = 10;
+    h = 10;
+    vel = 2
+    
+    dibujar (){
+        push()
+        rect (this.x, this.y, this.w, this.h)
+        pop()
+    }
+
+    
+    inteligencia(){
+ 
+    if (this.x > tank.x){
+            this.x = this.x - this.vel
         }
+    if (this.x < tank.x){
+            this.x = this.x + this.vel
+        }
+    if (this.y> tank.y){
+            this.y = this.y - this.vel
+        }
+    if (this.y < tank.y){
+            this.y = this.y + this.vel
+        }
+          
+         
+    }
+    
+
 }
 
-var tank = new Tanque (610, 360);
+function preload(){
 
-function setup(){
-    background(0);
+}
+function setup() {
+        createCanvas(1280, 720);
+    }
+    let tank = new Tank(200,200);
+    let enemigo = new Enemies(640,360);
+    proyectiles = [];
+    let enemigos = [];
+    function draw() {
+        if (Math.random()> 0.99){
+            let currentX = Math.floor(Math.random()* 120 - 60)
+            let currentY = Math.floor(Math.random()* 120 - 60)
+            if (currentX>0){
+                currentX = currentX +1280
+            }
+            if (currentY>0){
+                currentY = currentY +720
+            }
+            enemigos.push(new Enemies(currentX,currentY))
+        }
 
-    createCanvas(1280, 720);
-}
-function draw (){
-    background (0);
-    tank.dibujar();
-    tank.moverse(37,39,40,38);
-    tank.rotar(65,68);
-    tank.diubujarTorreta();
-}
 
-if (keyIsDown(LEFT_ARROW)){
-    this.currentTowerAngle = this.currentTowerAngle -1;
-}
-if (keyIsDown(RIGHT_ARROW)){
-    this.currentTowerAngle = this.currentTowerAngle +1;
-}
-if (keyIsDown(87)){
-    this.x = this.x + displacementX;
-    this.y = this.y - displacementY;
-}
+        background(220);
+        enemigo.dibujar();
+     
+        enemigo.inteligencia();
+       
+        tank.mover(proyectiles);
+        proyectiles.forEach(element => {
+            element.mover()
+            element.dibujar()
 
-translate (this.x,this.y)
-rotate(this.currentBodyAngle);
-this.dibujar();
-
-rotate (this.currentTowerAngle);
-this.diubujarTorreta();
-this.dibujarTronco();
+        });
+    }
