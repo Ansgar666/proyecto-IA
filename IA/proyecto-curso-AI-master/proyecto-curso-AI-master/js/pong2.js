@@ -6,16 +6,26 @@ class Pala {
     }
     w = 60;
     h = 10;
+    v = 5;
     dibujar() {
         rect(this.x, this.y, this.w, this.h)
     }
     moverse(key1,key2) {
         if (keyIsDown(key1) && this.x > 0) {
-            this.x = this.x - 10;
+            this.x = this.x - this.v;
         }
         if (keyIsDown(key2) && this.x < (1280 - 60)) {
-            this.x = this.x + 10;
+            this.x = this.x + this.v;
         }
+    }
+    inteligencia(bola){
+        if ((this.x + this.w)> bola.x){
+            this.x = this.x - this.v
+        }
+        if (this.x < bola.x){
+            this.x = this.x + this.v
+        }
+        
     }
 }
 class Bola {
@@ -26,8 +36,8 @@ class Bola {
     }
     w = 10;
     h = 10;
-    vx = 2;
-    vy = -2;
+    vx = 5;
+    vy = -5;
     dibujar() {
         if(this.type == 0){
             fill(0,255,0)
@@ -49,11 +59,13 @@ class Bola {
         if ((this.y >= pala.y && this.y <= (pala.y + pala.h)) && (this.x >= pala.x -5 && this.x <= pala.x + 65)) {
             this.vy = this.vy * -1;
             if(Math.random() > 0.5){
-            this.vx = this.vx * Math.random() * 2 + 1;
-            }else{
-                this.vx = this.vx * Math.random() * 2 - 1;
+                this.vx = this.vx * Math.random() * 2 + 2;
+                }else{
+                    this.vx = this.vx * Math.random() * 2 - 2;
+                }
             }
-        }
+            
+        
     }
     comprobarSiChocaConParedes(arrayBolaNuevas) {
         //Aqui comprobamos si la bola choca con los bordes de la pantalla
@@ -98,10 +110,12 @@ function setup() {
 function draw() {
     background(220);
     
-    j1.moverse(37,39);
+    
+    j1.inteligencia(bola);
     j1.dibujar();
     j2.dibujar();
-    j2.moverse(65   ,68)
+    
+    j2.inteligencia(bola);
     bola.dibujar();
     bola.moverse();
 
